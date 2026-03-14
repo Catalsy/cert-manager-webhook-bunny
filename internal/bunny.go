@@ -1,5 +1,7 @@
 package internal
 
+import "encoding/json"
+
 type ZoneResponse struct {
 	Items        []Items `json:"Items"`
 	CurrentPage  int     `json:"CurrentPage"`
@@ -38,8 +40,8 @@ type Record struct {
 	Accelerated           bool                    `json:"Accelerated"`
 	AcceleratedPullZoneId int                     `json:"AcceleratedPullZoneId"`
 	LinkName              string                  `json:"LinkName"`
-	IPGeoLocationInfo     string                  `json:"IPGeoLocationInfo"`
-	GeolocationInfo       string                  `json:"GeolocationInfo"`
+	IPGeoLocationInfo     json.RawMessage         `json:"IPGeoLocationInfo"`
+	GeolocationInfo       json.RawMessage         `json:"GeolocationInfo"`
 	MonitorStatus         int                     `json:"MonitorStatus"`
 	MonitorType           int                     `json:"MonitorType"`
 	GeolocationLatitude   float32                 `json:"GeolocationLatitude"`
