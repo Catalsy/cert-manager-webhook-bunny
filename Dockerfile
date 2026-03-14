@@ -1,12 +1,15 @@
 FROM --platform=$BUILDPLATFORM golang:1.25 AS build
 WORKDIR /workspace
 COPY go.mod go.sum .
-RUN go mod download
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 COPY . .
 ARG TARGETOS TARGETARCH
-RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o webhook -ldflags '-w -extldflags "-static"' .
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o webhook -ldflags '-w -extldflags "-static"' .
 
-FROM alpine:3.21.2 AS certs
+FROM alpine:3.23.3 AS certs
 RUN apk add -U --no-cache ca-certificates
 
 FROM scratch
