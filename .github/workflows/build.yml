@@ -5,49 +5,90 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  USERNAME: ${{ github.actor }}
   IMAGE_NAME: catalsy/cert-manager-webhook-bunny
   # set version here for upcoming release
   IMAGE_TAG: 1.0.1
-  IMAGE_TAG_DEVELOP: develop
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
 
     permissions:
       contents: read
       packages: write
+      id-token: write
+      attestations: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
+      - uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
+
       - name: Login to container registry
         uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ env.USERNAME }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
 
-      - name: Build & push Docker image (all architectures)
+      - name: Build & push Docker image
+        id: build
         uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
-        if: github.ref == 'refs/heads/main'
         with:
           platforms: linux/arm/v7,linux/amd64,linux/arm64/v8,linux/ppc64le,linux/s390x
           push: true
           context: .
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          sbom: true
+          provenance: mode=max
 
-      # this is used mainly for testing
-      - name: Build & push Docker image (amd64 only for develop)
-        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
-        if: github.ref == 'refs/heads/develop'
+      - name: Scan image for vulnerabilities
+        if: steps.build.outputs.digest != ''
+        uses: aquasecurity/trivy-action@57a97c7e7821a5776cebc9bb87c984fa69cba8f1 # 0.35.0
         with:
-          platforms: linux/amd64
-          push: true
-          context: .
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG_DEVELOP }}
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${{ steps.build.outputs.digest }}
+          format: table
+          output: trivy-results.txt
+          severity: CRITICAL,HIGH
+          exit-code: "0"
+          ignore-unfixed: true
+
+      - name: Sign image with cosign
+        if: steps.build.outputs.digest != ''
+        env:
+          DIGEST: ${{ steps.build.outputs.digest }}
+        run: cosign sign --yes "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}@${DIGEST}"
+
+      - name: Summary
+        if: steps.build.outputs.digest != ''
+        env:
+          IMAGE_DIGEST: ${{ steps.build.outputs.digest }}
+        run: |
+          {
+            echo "### cert-manager-webhook-bunny"
+            echo ""
+            echo "**Image:** \`${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}\`"
+            echo ""
+            echo "**Digest:** \`${IMAGE_DIGEST}\`"
+            echo ""
+            echo "**Supply chain:** SBOM, SLSA Provenance, Cosign signature, Trivy scan"
+            echo ""
+            if grep -q "Total:" trivy-results.txt 2>/dev/null; then
+              echo "<details><summary>Vulnerability scan results</summary>"
+              echo ""
+              echo '```'
+              cat trivy-results.txt
+              echo '```'
+              echo ""
+              echo "</details>"
+            else
+              echo "**Vulnerability scan:** No CRITICAL/HIGH vulnerabilities found"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
