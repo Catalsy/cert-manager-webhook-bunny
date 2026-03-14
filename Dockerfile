@@ -9,7 +9,8 @@ RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -o webhook -ldflags
 FROM alpine:3.21.2 AS certs
 RUN apk add -U --no-cache ca-certificates
 
-FROM busybox:1.37.0-glibc
+FROM scratch
 COPY --from=certs /etc/ssl/certs /etc/ssl/certs
 COPY --from=build /workspace/webhook /usr/local/bin/webhook
+USER 1000:1000
 ENTRYPOINT ["webhook"]
