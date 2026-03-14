@@ -1,0 +1,15 @@
+.git
+.github
+.gitignore
+.dockerignore
+.mise.toml
+.idea
+.vscode
+charts
+deploy
+Makefile
+README.md
+LICENSE
+_out
+_test
+*.md
