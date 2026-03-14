@@ -20,7 +20,7 @@ import (
 
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/cert-manager/cert-manager/pkg/acme/webhook/cmd"
-	"github.com/davidhidvegi/cert-manager-webhook-bunny/internal"
+	"github.com/catalsy/cert-manager-webhook-bunny/internal"
 )
 
 var GroupName = os.Getenv("GROUP_NAME")

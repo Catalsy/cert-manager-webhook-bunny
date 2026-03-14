@@ -38,7 +38,7 @@ For more details, please refer to https://cert-manager.io/docs/configuration/acm
 
 Now, the actual webhook can be installed via Helm chart:
 ```
-helm repo add cert-manager-webhook-bunny https://davidhidvegi.github.io/cert-manager-webhook-bunny/charts/
+helm repo add cert-manager-webhook-bunny https://catalsy.github.io/cert-manager-webhook-bunny/charts/
 
 helm install my-cert-manager-webhook-bunny cert-manager-webhook-bunny/cert-manager-webhook-bunny --namespace cert-manager
 ```

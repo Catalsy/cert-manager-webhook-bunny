@@ -12,7 +12,7 @@ entries:
     description: A Helm chart for cert manager webhook solver for ACME DNS01 challenge
       via Bunny
     digest: b777d423cb607c368084fabf251834728bfaa94e4a0e8c6a6efc1b444f8c89d4
-    home: https://github.com/davidhidvegi/cert-manager-webhook-bunny
+    home: https://github.com/catalsy/cert-manager-webhook-bunny
     icon: https://raw.githubusercontent.com/cert-manager/cert-manager/master/logo/logo.png
     keywords:
     - cert-manager

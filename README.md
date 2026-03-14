@@ -1,7 +1,7 @@
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/cert-manager-webhook-bunny)](https://artifacthub.io/packages/helm/cert-manager-webhook-bunny/cert-manager-webhook-bunny)
-[![Go Report Card](https://goreportcard.com/badge/github.com/davidhidvegi/cert-manager-webhook-bunny)](https://goreportcard.com/report/github.com/davidhidvegi/cert-manager-webhook-bunny)
-[![License](https://img.shields.io/github/license/davidhidvegi/cert-manager-webhook-bunny)](https://github.com/davidhidvegi/cert-manager-webhook-bunny/blob/main/LICENSE)
-![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/davidhidvegi/cert-manager-webhook-bunny)
+[![Go Report Card](https://goreportcard.com/badge/github.com/catalsy/cert-manager-webhook-bunny)](https://goreportcard.com/report/github.com/catalsy/cert-manager-webhook-bunny)
+[![License](https://img.shields.io/github/license/catalsy/cert-manager-webhook-bunny)](https://github.com/catalsy/cert-manager-webhook-bunny/blob/main/LICENSE)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/catalsy/cert-manager-webhook-bunny)
 
 cert-manager-webhook-bunny
 ===========================
@@ -43,7 +43,7 @@ For more details, please refer to https://cert-manager.io/docs/configuration/acm
 
 Now, the actual webhook can be installed via Helm chart:
 ```
-helm repo add cert-manager-webhook-bunny https://davidhidvegi.github.io/cert-manager-webhook-bunny/charts/
+helm repo add cert-manager-webhook-bunny https://catalsy.github.io/cert-manager-webhook-bunny/charts/
 
 helm install my-cert-manager-webhook-bunny cert-manager-webhook-bunny/cert-manager-webhook-bunny --namespace cert-manager
 ```
