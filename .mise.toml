@@ -1,0 +1,14 @@
+[tools]
+go = "1.25"
+
+[tasks.build]
+description = "Build the project"
+run = "go build ./..."
+
+[tasks.test]
+description = "Run tests"
+run = "go test ./..."
+
+[tasks.vet]
+description = "Run go vet"
+run = "go vet ./..."
